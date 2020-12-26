@@ -1,12 +1,14 @@
 package in.kafka.redis.config.redis;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -14,12 +16,12 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @EnableCaching
 @Configuration
-@PropertySource("classpath:/redis.properties")
+//@PropertySource("classpath:/redis.properties")
 public class RedisConfiguration extends CachingConfigurerSupport {
 
-	@Value("${redis.host}")
+	@Value("${spring.redis.host}")
 	private String redisHost;
-	@Value("${redis.port}")
+	@Value("${spring.redis.port}")
 	private int redisPort;
 
 	@Bean
@@ -32,8 +34,8 @@ public class RedisConfiguration extends CachingConfigurerSupport {
 	}
 
 	@Bean
-	public RedisTemplate<Object, Object> redisTemplate() {
-		RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<Object, Object>();
+	public RedisTemplate<String, Object> redisTemplate() {
+		RedisTemplate<String, Object> redisTemplate = new RedisTemplate<String, Object>();
 		redisTemplate.setConnectionFactory(jedisConnectionFactory());
 		redisTemplate.setKeySerializer(new StringRedisSerializer());
 		redisTemplate.setValueSerializer(new StringRedisSerializer());
@@ -43,6 +45,9 @@ public class RedisConfiguration extends CachingConfigurerSupport {
 	@Bean
 	public CacheManager cacheManager() {
 		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate());
+		List<String> cacheNames = new ArrayList<String>();
+		cacheNames.add("countryDetails");
+		redisCacheManager.setCacheNames(cacheNames);
 		redisCacheManager.setUsePrefix(true);
 		return redisCacheManager;
 	}
