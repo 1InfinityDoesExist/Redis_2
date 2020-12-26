@@ -1,39 +1,50 @@
 package in.kafka.redis.config.redis;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+@EnableCaching
 @Configuration
+@PropertySource("classpath:/redis.properties")
 public class RedisConfiguration extends CachingConfigurerSupport {
+
+	@Value("${redis.host}")
+	private String redisHost;
+	@Value("${redis.port}")
+	private int redisPort;
 
 	@Bean
 	public JedisConnectionFactory jedisConnectionFactory() {
-		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration("127.0.0.1", 6379);
-		return new JedisConnectionFactory(redisStandaloneConfiguration);
+		JedisConnectionFactory factory = new JedisConnectionFactory();
+		factory.setHostName(redisHost);
+		factory.setPort(redisPort);
+		factory.setUsePool(true);
+		return factory;
 	}
 
 	@Bean
 	public RedisTemplate<Object, Object> redisTemplate() {
 		RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<Object, Object>();
 		redisTemplate.setConnectionFactory(jedisConnectionFactory());
-		redisTemplate.setExposeConnection(true);
 		redisTemplate.setKeySerializer(new StringRedisSerializer());
-		redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-		redisTemplate.setHashKeySerializer(new GenericJackson2JsonRedisSerializer());
+		redisTemplate.setValueSerializer(new StringRedisSerializer());
 		return redisTemplate;
 	}
 
 	@Bean
-	public RedisCacheManager redisCacheManager() {
-		RedisCacheManager redisCacheManager = new RedisCacheManager();
-
+	public CacheManager cacheManager() {
+		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate());
+		redisCacheManager.setUsePrefix(true);
+		return redisCacheManager;
 	}
 
 }
