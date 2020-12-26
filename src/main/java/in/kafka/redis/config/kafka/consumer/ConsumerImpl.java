@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-//@CacheConfig(cacheNames = { "countryDetails" })
+@CacheConfig(cacheNames = { "countryDetails" })
 public class ConsumerImpl {
 
 	private Cache cache;
@@ -60,8 +60,8 @@ public class ConsumerImpl {
 				try {
 					CountryDetails countryDetails = new ObjectMapper().readValue(jsonObj.toString(),
 							CountryDetails.class);
-					log.info(":::::countryDetails {}", countryDetails.getAlpha3Code());
-					cache.put(countryDetails.getAlpha3Code(), new ObjectMapper().writeValueAsString(countryDetails));
+					// log.info(":::::countryDetails {}", countryDetails.getAlpha3Code());
+					cache.put(countryDetails.getAlpha3Code(), countryDetails);
 					// countryDetailsRepository.save(countryDetails);
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
