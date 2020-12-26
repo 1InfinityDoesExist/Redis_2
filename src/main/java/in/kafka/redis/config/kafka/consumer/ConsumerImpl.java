@@ -61,8 +61,8 @@ public class ConsumerImpl {
 					CountryDetails countryDetails = new ObjectMapper().readValue(jsonObj.toString(),
 							CountryDetails.class);
 					// log.info(":::::countryDetails {}", countryDetails.getAlpha3Code());
+					countryDetailsRepository.save(countryDetails);
 					cache.put(countryDetails.getAlpha3Code(), countryDetails);
-					// countryDetailsRepository.save(countryDetails);
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}
