@@ -23,4 +23,5 @@ public interface CountryDetailsService {
 	public CountryDetailsResponse updateCountryDetails(CountryDetailsUpdateReqeust updateRequest, String alpha3Code)
 			throws Exception;
 
+	public List<CountryDetails> getAllNeighbourCountries(String boarders);
 }
