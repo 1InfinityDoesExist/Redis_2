@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import in.kafka.redis.entity.CountryDetails;
@@ -76,5 +77,12 @@ public class CountryDetailsController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ModelMap().addAttribute("error_msg", ex.getMessage()));
 		}
+	}
+
+	@GetMapping(value = "/neighbourbased")
+	public ResponseEntity<ModelMap> getNeighbourCountries(
+			@RequestParam(value = "boarders", required = true) String boarders) {
+		List<CountryDetails> listOfCountries = countryDetailsService.getAllNeighbourCountries(boarders);
+		return ResponseEntity.status(HttpStatus.OK).body(new ModelMap().addAttribute("response", listOfCountries));
 	}
 }

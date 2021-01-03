@@ -71,4 +71,14 @@ public class CountryDetailsServiceImpl implements CountryDetailsService {
 		return null;
 	}
 
+	@Override
+	public List<CountryDetails> getAllNeighbourCountries(String boarders) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
+
+//Sort on the basis of population and area
+//duplicate value gets stored in db
+//make update thread safe.... sync use lock or semaphore. .. send email once updated...
